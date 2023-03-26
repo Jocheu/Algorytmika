@@ -3,6 +3,7 @@ package com.example.algorytmika
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import java.io.Console
 import kotlin.concurrent.timer
@@ -17,20 +18,44 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         findViewById<Button>(R.id.button2).setOnClickListener {
-            var txt = ""
-            for (i in 0..49) {
-                txt = txt + (65 + ((0..10).random() % 3)).toChar().toString()
+            var dataNum = findViewById<EditText>(R.id.editTextNumber2).text.toString()
+            var laps = findViewById<EditText>(R.id.editTextNumber).text.toString()
+            if(dataNum!=""&&laps!="") {
+                var num = dataNum.toInt()
+                var txt = ""
+                for (i in 0..num) {
+                    txt = txt + (65 + ((0..10).random() % 3)).toChar().toString()
+                }
+                var pat = ""
+                for (i in 0..2) {
+                    pat = pat + (65 + ((0..10).random() % 3)).toChar().toString()
+                }
+
+                val executionTime1 = measureTimeMillis {
+                    for (i in 0..laps.toInt()){
+                    bruteForce(txt, pat)
+                    }
+                }
+                val executionTime2 = measureTimeMillis {
+                    for (i in 0..laps.toInt()) {
+                        KMP(txt, pat)
+                    }
+                }
+                val executionTime3 = measureTimeMillis {
+                    for (i in 0..laps.toInt()) {
+                        BoyerMoore(txt, pat)
+                    }
+                }
+                val executionTime4 = measureTimeMillis {
+                    for (i in 0.. laps.toInt()) {
+                        RK(txt, pat)
+                    }
+                }
+                findViewById<TextView>(R.id.czas1).text = executionTime1.toString()
+                findViewById<TextView>(R.id.czas2).text = executionTime2.toString()
+                findViewById<TextView>(R.id.czas3).text = executionTime3.toString()
+                findViewById<TextView>(R.id.czas4).text = executionTime4.toString()
             }
-            var pat = ""
-            for (i in 0..2) {
-                pat = pat + (65 + ((0..10).random() % 3)).toChar().toString()
-            }
-            findViewById<TextView>(R.id.textView).text = txt
-            findViewById<TextView>(R.id.textView2).text = pat
-            findViewById<TextView>(R.id.czas1).text = bruteForce(txt, pat).toString()
-            findViewById<TextView>(R.id.czas2).text = KMP(txt, pat).toString()
-            findViewById<TextView>(R.id.czas3).text = BoyerMoore(txt, pat).toString()
-            findViewById<TextView>(R.id.czas4).text = RK(txt, pat).toString()
         }
 
 
@@ -155,8 +180,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        findViewById<TextView>(R.id.textView3).text = hashPat.toString()
-        findViewById<TextView>(R.id.textView10).text = hastText.toString()
 
         return -1
     }
