@@ -8,6 +8,8 @@ import java.io.Console
 import kotlin.concurrent.timer
 import kotlin.system.measureTimeMillis
 import java.util.*
+import kotlin.math.min
+import java.security.MessageDigest
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,36 +17,35 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         findViewById<Button>(R.id.button2).setOnClickListener {
             var txt = ""
-            for(i in 0..49){
-                txt = txt + (65 + ((0..10).random()%3)).toChar().toString()
+            for (i in 0..49) {
+                txt = txt + (65 + ((0..10).random() % 3)).toChar().toString()
             }
             var pat = ""
-            for(i in 0..2){
-                pat = pat + (65 + ((0..10).random()%3)).toChar().toString()
+            for (i in 0..2) {
+                pat = pat + (65 + ((0..10).random() % 3)).toChar().toString()
             }
             findViewById<TextView>(R.id.textView).text = txt
             findViewById<TextView>(R.id.textView2).text = pat
             findViewById<TextView>(R.id.czas1).text = bruteForce(txt, pat).toString()
-            findViewById<TextView>(R.id.czas2).text = KMP(txt,pat).toString()
+            findViewById<TextView>(R.id.czas2).text = KMP(txt, pat).toString()
+            findViewById<TextView>(R.id.czas3).text = BoyerMoore(txt, pat).toString()
         }
-
 
 
 
     }
 
-    fun bruteForce(tekst: String, pattern:String):Int{
-        for(i in 0..47){
-            if(pattern == tekst.slice(i..i+2)){
+    fun bruteForce(tekst: String, pattern: String): Int {
+        for (i in 0..47) {
+            if (pattern == tekst.slice(i..i + 2)) {
                 return i
             }
         }
         return -1
     }
 
-    fun KMP(text: String, pattern: String):Int{
+    fun KMP(text: String, pattern: String): Int {
         var i = 0
-
         var j = 0
 
         if (pattern.isEmpty()) {
@@ -69,7 +70,6 @@ class MainActivity : AppCompatActivity() {
                     return i - pattern.length
                 }
             } else if (j > 0) {
-
                 j = longestPrefixSuffix[j - 1]
             } else {
                 i++
@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         }
         return -1
     }
-    }
+
 
     fun getFiniteAutomata(pattern: String): IntArray {
 
@@ -112,4 +112,43 @@ class MainActivity : AppCompatActivity() {
         }
         return finiteAutomata
     }
+
+    fun BoyerMoore(text: String, pattern: String): Int {
+        var textLength = text.length
+        val patternLength = pattern.length
+        if (patternLength > textLength) {
+            return -1
+        }
+        val last = IntArray(256) { -1 }
+        for (i in 0 until patternLength) {
+            last[pattern[i].toInt()] = i
+        }
+
+        var i = patternLength - 1
+        var j = patternLength - 1
+        while (i < textLength) {
+            if (text[i] == pattern[j]) {
+                if (j == 0) {
+                    return i
+                }
+                i--
+                j--
+            } else {
+                i += patternLength - Math.min(j, 1 + last[text[i].toInt()])
+                j = patternLength - 1
+            }
+        }
+        return -1
+    }
+
+}
+
+
+
+
+
+
+
+
+
 
