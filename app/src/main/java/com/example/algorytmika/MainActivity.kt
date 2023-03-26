@@ -10,6 +10,7 @@ import kotlin.system.measureTimeMillis
 import java.util.*
 import kotlin.math.min
 import java.security.MessageDigest
+import java.math.BigInteger
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
             findViewById<TextView>(R.id.czas1).text = bruteForce(txt, pat).toString()
             findViewById<TextView>(R.id.czas2).text = KMP(txt, pat).toString()
             findViewById<TextView>(R.id.czas3).text = BoyerMoore(txt, pat).toString()
+            findViewById<TextView>(R.id.czas4).text = RK(txt, pat).toString()
         }
 
 
@@ -140,6 +142,25 @@ class MainActivity : AppCompatActivity() {
         }
         return -1
     }
+
+    fun RK(text: String, pattern: String):Int{
+        val hashPat = pattern.hashCode()
+        var hastText:Int
+        hastText = text.substring(0,pattern.length).hashCode()
+        for(i in 0..text.length-pattern.length){
+            hastText = text.substring(i,i+pattern.length).hashCode()
+            if(hastText==hashPat){
+                if(text.substring(i, i+pattern.length)==pattern){
+                    return i
+                }
+            }
+        }
+        findViewById<TextView>(R.id.textView3).text = hashPat.toString()
+        findViewById<TextView>(R.id.textView10).text = hastText.toString()
+
+        return -1
+    }
+
 
 }
 
